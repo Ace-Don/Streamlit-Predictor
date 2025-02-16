@@ -92,7 +92,7 @@ def choose_model():
     st.markdown('---')
     st.subheader('Choose a machine learning model to train your data:')
     st.info('This section is for selecting and training machine learning models. Please note that advanced machine learning models will be implemented in the next phase.')
-    task = st.selectbox('What kind of task do you want to perform?', ['Classification', 'Regression', 'Clustering', 'Hypothesis Testing'], index = None)
+    task = st.selectbox('What kind of task do you want to perform?', ['Classification', 'Regression'], index = None)
     if task is not None:
         if task == 'Classification':
             st.sidebar.subheader('Choose a classification model:')
