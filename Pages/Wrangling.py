@@ -290,7 +290,7 @@ def transformation(df,categorical, continuous, other, dates):
     st.write(dates)
     st.markdown('---')
 
-    transformation_type = st.sidebar.selectbox('Choose a transformation type:', options=['Binning', 'Change Data Type', 'Feature Scaling', 'Label Encoding', 'One-Hot Encoding'], index=None)
+    transformation_type = st.sidebar.selectbox('Choose a transformation type:', options=['Binning', 'Add Columns', 'Change Data Type', 'Feature Scaling', 'Label Encoding', 'One-Hot Encoding'], index=None)
     if transformation_type is not None:
         if transformation_type == 'Change Data Type':
             column = st.selectbox('Choose the column to change data type:', options=df.columns, index=None)
@@ -313,12 +313,15 @@ def transformation(df,categorical, continuous, other, dates):
                 scale_data(df, column)
 
         elif transformation_type == 'One-Hot Encoding':
-            column = st.multiselect('Choose the columns to encode:', options=categorical, default = None)
+            column = st.multiselect('Choose the columns to one hot encode:', options=categorical, default = None)
             one_hot_encoding(df, column)
 
         elif transformation_type == 'Label Encoding':
-            column = st.multiselect('Choose the columns to encode:', options=categorical, default = None)
+            column = st.multiselect('Choose the columns to label encode:', options=categorical, default = None)
             label_encoding(df, column)    
+        
+        elif transformation_type == 'Add Columns':
+            add_columns(df)   
 
     else : st.info('Go on to select a transformation type from the sidebar!')
 
@@ -415,7 +418,43 @@ def alter_values(df):
                 except Exception as e:
                     st.error(f"❌ Error applying changes: {e}")
 
-    
+def add_columns(df):
+    st.markdown('#### $Data$ $Preview$')
+    st.dataframe(df.head())
+
+    st.markdown('---')
+    st.markdown('##### Write Code Logic Below')
+    code = st_ace('Write New Column Logic Here (Remember to comment this line out):', language='python', theme= "monokai")
+
+    if st.button('Preview Code Execution'):
+        try:
+            # Create a temporary copy of df for preview
+            df_preview = df.copy()
+            exec_globals = {"df": df_preview}
+            exec(code, exec_globals)
+            df_preview = exec_globals["df"]  # Updated preview
+
+            st.success('✅ Code executed successfully! Preview below:')
+            st.dataframe(df_preview)  # Show preview only
+
+        except Exception as e:
+            st.error(f"❌ Error in code execution: {e}")
+
+    if st.button('Apply Changes'):
+        try:
+            exec_globals = {"df": df}
+            exec(code, exec_globals)
+            df = exec_globals["df"]  # Apply changes permanently
+
+            st.success('✅ Changes applied to DataFrame!')
+            st.session_state.to_clean = df
+            st.dataframe(df.head())  # Show updated DataFrame
+
+        except Exception as e:
+            st.error(f"❌ Error applying changes: {e}")
+
+
+
 if "data" not in st.session_state:
     st.info('Upload data on the main page.') 
 
