@@ -128,7 +128,7 @@ def model_train_regression(input, params, X_train, y_train, X_test, y_test):
 
 def log_reg_model(X_train, y_train, X_test, y_test):
   st.info('Know that a Logistic Regression model only works with numerical data, soo make sure your transformations are performed as due.')
-  scale_list, one_hot_list, label_list = transform_column_choice()
+  scale_list, one_hot_list, label_list = transform_column_choice(X_train)
   transform_check = st.checkbox('Check if you have selected what columns to apply your desired transformation steps to.')
  
 
@@ -168,7 +168,7 @@ def log_reg_model(X_train, y_train, X_test, y_test):
 
 
 def decision_tree_model(X_train, y_train, X_test, y_test):
-  scale_list, one_hot_list, label_list = transform_column_choice()
+  scale_list, one_hot_list, label_list = transform_column_choice(X_train)
   transform_check = st.checkbox('Check if you have selected what columns to apply your desired transformation steps to.')
 
 
@@ -207,7 +207,7 @@ def decision_tree_model(X_train, y_train, X_test, y_test):
   else : st.info('If you do not desire to add transformation steps to the pipeline, you should still check the box to proceed with training')
 
 def random_forest_model(X_train, y_train, X_test, y_test):
-  scale_list, one_hot_list, label_list = transform_column_choice()
+  scale_list, one_hot_list, label_list = transform_column_choice(X_train)
   transform_check = st.checkbox('Check if you have selected what columns to apply your desired transformation steps to.')
 
 
@@ -249,7 +249,7 @@ def random_forest_model(X_train, y_train, X_test, y_test):
 
 
 def xgboost_model(X_train, y_train, X_test, y_test):
-  scale_list, one_hot_list, label_list = transform_column_choice()
+  scale_list, one_hot_list, label_list = transform_column_choice(X_train)
   transform_check = st.checkbox('Check if you have selected what columns to apply your desired transformation steps to.')
 
 
@@ -293,8 +293,9 @@ def xgboost_model(X_train, y_train, X_test, y_test):
 
 
 def svm_model(X_train, y_train, X_test, y_test):
-  scale_list, one_hot_list, label_list = transform_column_choice()
+  scale_list, one_hot_list, label_list = transform_column_choice(X_train)
   transform_check = st.checkbox('Check if you have selected what columns to apply your desired transformation steps to.')
+
 
   if transform_check:
     preprocessor = ColumnTransformer(
@@ -329,7 +330,7 @@ def svm_model(X_train, y_train, X_test, y_test):
 
 
 def knn_model(X_train, y_train, X_test, y_test):
-  scale_list, one_hot_list, label_list = transform_column_choice()
+  scale_list, one_hot_list, label_list = transform_column_choice(X_train)
   transform_check = st.checkbox('Check if you have selected what columns to apply your desired transformation steps to.')
 
   if transform_check:
@@ -366,8 +367,8 @@ def knn_model(X_train, y_train, X_test, y_test):
   else : st.info('If you do not desire to add transformation steps to the pipeline, you should still check the box to proceed with training')
         
 
-def catboost_model(Xtrain, ytrain, X_test, y_test):
-  scale_list, one_hot_list, label_list = transform_column_choice()
+def catboost_model(X_train, ytrain, X_test, y_test):
+  scale_list, one_hot_list, label_list = transform_column_choice(X_train)
   transform_check = st.checkbox('Check if you have selected what columns to apply your desired transformation steps to.')
 
 
@@ -394,7 +395,7 @@ def catboost_model(Xtrain, ytrain, X_test, y_test):
         ok = st.radio('Are you satisfied with your oversampling settings?', options=['Yes', 'No'], index = None )
         if ok == 'Yes':
             input.append(('model', CatBoostClassifier(auto_class_weights = 'Balanced', loss_function='Logloss', verbose = 0)))
-            model_train_classification(input,param_grid,Xtrain, ytrain, X_test, y_test)
+            model_train_classification(input,param_grid,X_train, ytrain, X_test, y_test)
             
                 
         elif ok =='No' :
@@ -402,13 +403,13 @@ def catboost_model(Xtrain, ytrain, X_test, y_test):
 
     elif sample == 'No':
         input.append(('model', CatBoostClassifier(auto_class_weights = 'Balanced', loss_function='Logloss', verbose = 0)))
-        model_train_classification(input,param_grid,Xtrain, ytrain, X_test, y_test)    
+        model_train_classification(input,param_grid,X_train, ytrain, X_test, y_test)    
 
   else : st.info('If you do not desire to add transformation steps to the pipeline, you should still check the box to proceed with training')
    
 
 def decision_tree_model_reg(X_train, y_train, X_test, y_test):
-  scale_list, one_hot_list, label_list = transform_column_choice()
+  scale_list, one_hot_list, label_list = transform_column_choice(X_train)
   transform_check = st.checkbox('Check if you have selected what columns to apply your desired transformation steps to.')
 
 
@@ -436,7 +437,7 @@ def decision_tree_model_reg(X_train, y_train, X_test, y_test):
 
 
 def linear_regression(X_train, y_train, X_test, y_test):
-    scale_list, one_hot_list, label_list = transform_column_choice()
+    scale_list, one_hot_list, label_list = transform_column_choice(X_train)
     transform_check = st.checkbox('Check if you have selected what columns to apply your desired transformation steps to.')
 
 
@@ -475,9 +476,9 @@ def linear_regression(X_train, y_train, X_test, y_test):
 
   
 
-def transform_column_choice():
-    continuous = st.session_state.to_clean_cont
-    categorical = st.session_state.to_clean_cat
+def transform_column_choice(data):
+    continuous = [col for col in data.columns if col in st.session_state.to_clean_cont]
+    categorical = [col for col in data.columns if col in st.session_state.to_clean_cat]
     st.sidebar.markdown('---')
     scaling = st.sidebar.multiselect('Select what colums you will want to scale in the model', options=continuous, default = None)
     one_hot = st.sidebar.multiselect('Select what categorical columns you will want to one-hot encode in the model', options=categorical, default = None)
