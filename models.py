@@ -295,7 +295,6 @@ def xgboost_model(X_train, y_train, X_test, y_test):
 def svm_model(X_train, y_train, X_test, y_test):
   scale_list, one_hot_list, label_list = transform_column_choice()
   transform_check = st.checkbox('Check if you have selected what columns to apply your desired transformation steps to.')
-  st.info('If you do not desire to add transformation steps to the pipeline, you should still check the box to proceed with training')
 
   if transform_check:
     preprocessor = ColumnTransformer(
@@ -332,7 +331,6 @@ def svm_model(X_train, y_train, X_test, y_test):
 def knn_model(X_train, y_train, X_test, y_test):
   scale_list, one_hot_list, label_list = transform_column_choice()
   transform_check = st.checkbox('Check if you have selected what columns to apply your desired transformation steps to.')
-  st.info('If you do not desire to add transformation steps to the pipeline, you should still check the box to proceed with training')
 
   if transform_check:
     preprocessor = ColumnTransformer(
