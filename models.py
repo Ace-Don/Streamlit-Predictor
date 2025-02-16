@@ -9,7 +9,7 @@ from sklearn.linear_model import Ridge
 from sklearn.linear_model import Lasso
 from sklearn.tree import DecisionTreeClassifier as DTC
 from sklearn.tree import DecisionTreeRegressor as DTR
-from sklearn.preprocessing import StandardScaler, PolynomialFeatures
+from sklearn.preprocessing import StandardScaler, PolynomialFeatures, OneHotEncoder, LabelEncoder
 from sklearn.metrics import jaccard_score
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import f1_score
@@ -58,6 +58,7 @@ def oversampler_func(y, input):
                 
                 return confirm
 
+
 def model_train_classification(input, params, X_train, y_train, X_test, y_test):
     time.sleep(0.5)
     pipeline = Pipeline(input)
@@ -90,6 +91,7 @@ def model_train_classification(input, params, X_train, y_train, X_test, y_test):
 
     else:
         st.stop()
+
 
 def model_train_regression(input, params, X_train, y_train, X_test, y_test):
     time.sleep(0.5)
@@ -125,14 +127,18 @@ def model_train_regression(input, params, X_train, y_train, X_test, y_test):
     
 
 def log_reg_model(X_train, y_train, X_test, y_test):
-    st.info('Know that a Logistic Regression model only works with numerical data, soo make sure your transformations are performed as due.')
-    numerical, non_numerical, date = data_types(X_train)
+  st.info('Know that a Logistic Regression model only works with numerical data, soo make sure your transformations are performed as due.')
+  scale_list, one_hot_list, label_list = transform_column_choice()
+  transform_check = st.checkbox('Check if you have selected what columns to apply your desired transformation steps to.')
+ 
 
+
+  if transform_check:
     preprocessor = ColumnTransformer(
-    transformers=[
-        ('num', StandardScaler(), numerical),  # Scale numerical features
-        # ('cat', OneHotEncoder(), ['categorical_feature'])  # One-hot encode categorical features
-    ])
+    transformers=[('num', StandardScaler(), scale_list), 
+        ('cat', OneHotEncoder(), one_hot_list),
+        ('label', LabelEncoder(), label_list)
+        ])
 
     input = [('preprocessor', preprocessor)]
     # hyperparameter grid
@@ -158,14 +164,20 @@ def log_reg_model(X_train, y_train, X_test, y_test):
         input.append(('model', LogisticRegression()))
         model_train_classification(input, param_grid,X_train, y_train, X_test, y_test)
 
-def decision_tree_model(X_train, y_train, X_test, y_test):
-    numerical, non_numerical, date = data_types(X_train)
+  else : st.info('If you do not desire to add transformation steps to the pipeline, you should still check the box to proceed with training')
 
+
+def decision_tree_model(X_train, y_train, X_test, y_test):
+  scale_list, one_hot_list, label_list = transform_column_choice()
+  transform_check = st.checkbox('Check if you have selected what columns to apply your desired transformation steps to.')
+
+
+  if transform_check:
     preprocessor = ColumnTransformer(
-    transformers=[
-        ('num', StandardScaler(), numerical),  # Scale numerical features
-        # ('cat', OneHotEncoder(), ['categorical_feature'])  # One-hot encode categorical features
-    ])
+    transformers=[('num', StandardScaler(), scale_list), 
+        ('cat', OneHotEncoder(), one_hot_list),
+        ('label', LabelEncoder(), label_list)
+        ])
 
     input = [('preprocessor', preprocessor)]
 
@@ -191,15 +203,20 @@ def decision_tree_model(X_train, y_train, X_test, y_test):
     elif sample == 'No': 
         input.append(('model', DTC()))
         model_train_classification(input, param_grid,X_train, y_train, X_test, y_test)
+    
+  else : st.info('If you do not desire to add transformation steps to the pipeline, you should still check the box to proceed with training')
 
 def random_forest_model(X_train, y_train, X_test, y_test):
-    numerical, non_numerical, date = data_types(X_train)
+  scale_list, one_hot_list, label_list = transform_column_choice()
+  transform_check = st.checkbox('Check if you have selected what columns to apply your desired transformation steps to.')
 
+
+  if transform_check:
     preprocessor = ColumnTransformer(
-    transformers=[
-        ('num', StandardScaler(), numerical),  # Scale numerical features
-        # ('cat', OneHotEncoder(), ['categorical_feature'])  # One-hot encode categorical features
-    ])
+    transformers=[('num', StandardScaler(), scale_list), 
+        ('cat', OneHotEncoder(), one_hot_list),
+        ('label', LabelEncoder(), label_list)
+        ])
 
     input = [('preprocessor', preprocessor)]
 
@@ -228,13 +245,20 @@ def random_forest_model(X_train, y_train, X_test, y_test):
         input.append(('model', RandomForestClassifier()))
         model_train_classification(input, param_grid,X_train, y_train, X_test, y_test)
 
+  else : st.info('If you do not desire to add transformation steps to the pipeline, you should still check the box to proceed with training')
+
+
 def xgboost_model(X_train, y_train, X_test, y_test):
-    numerical, non_numerical, date = data_types(X_train)
+  scale_list, one_hot_list, label_list = transform_column_choice()
+  transform_check = st.checkbox('Check if you have selected what columns to apply your desired transformation steps to.')
+
+
+  if transform_check:
     preprocessor = ColumnTransformer(
-    transformers=[
-        ('num', StandardScaler(), numerical),  # Scale numerical features
-        # ('cat', OneHotEncoder(), ['categorical_feature'])  # One-hot encode categorical features
-    ])
+    transformers=[('num', StandardScaler(), scale_list), 
+        ('cat', OneHotEncoder(), one_hot_list),
+        ('label', LabelEncoder(), label_list)
+        ])
 
     input = [('preprocessor', preprocessor)]
 
@@ -265,13 +289,20 @@ def xgboost_model(X_train, y_train, X_test, y_test):
         input.append(('model', XGBClassifier()))
         model_train_classification(input, param_grid,X_train, y_train, X_test, y_test)
 
+  else : st.info('If you do not desire to add transformation steps to the pipeline, you should still check the box to proceed with training')
+
+
 def svm_model(X_train, y_train, X_test, y_test):
-    numerical, non_numerical, date = data_types(X_train)
+  scale_list, one_hot_list, label_list = transform_column_choice()
+  transform_check = st.checkbox('Check if you have selected what columns to apply your desired transformation steps to.')
+  st.info('If you do not desire to add transformation steps to the pipeline, you should still check the box to proceed with training')
+
+  if transform_check:
     preprocessor = ColumnTransformer(
-    transformers=[
-        ('num', StandardScaler(), numerical),  # Scale numerical features
-        # ('cat', OneHotEncoder(), ['categorical_feature'])  # One-hot encode categorical features
-    ])
+    transformers=[('num', StandardScaler(), scale_list), 
+        ('cat', OneHotEncoder(), one_hot_list),
+        ('label', LabelEncoder(), label_list)
+        ])
 
     input = [('preprocessor', preprocessor)]
     # hyperparameter grid
@@ -295,13 +326,20 @@ def svm_model(X_train, y_train, X_test, y_test):
         input.append(('model', SVC()))
         model_train_classification(input, param_grid,X_train, y_train, X_test, y_test)
 
+  else : st.info('If you do not desire to add transformation steps to the pipeline, you should still check the box to proceed with training')
+
+
 def knn_model(X_train, y_train, X_test, y_test):
-    numerical, non_numerical, date = data_types(X_train)
+  scale_list, one_hot_list, label_list = transform_column_choice()
+  transform_check = st.checkbox('Check if you have selected what columns to apply your desired transformation steps to.')
+  st.info('If you do not desire to add transformation steps to the pipeline, you should still check the box to proceed with training')
+
+  if transform_check:
     preprocessor = ColumnTransformer(
-    transformers=[
-        ('num', StandardScaler(), numerical),  # Scale numerical features
-        # ('cat', OneHotEncoder(), ['categorical_feature'])  # One-hot encode categorical features
-    ])
+    transformers=[('num', StandardScaler(), scale_list), 
+        ('cat', OneHotEncoder(), one_hot_list),
+        ('label', LabelEncoder(), label_list)
+        ])
 
     input = [('preprocessor', preprocessor)]
     # hyperparameter grid
@@ -327,13 +365,20 @@ def knn_model(X_train, y_train, X_test, y_test):
         input.append(('model', KNeighborsClassifier()))
         model_train_classification(input, param_grid,X_train, y_train, X_test, y_test)
 
+  else : st.info('If you do not desire to add transformation steps to the pipeline, you should still check the box to proceed with training')
+        
+
 def catboost_model(Xtrain, ytrain, X_test, y_test):
-    numerical, non_numerical, date = data_types(Xtrain)
+  scale_list, one_hot_list, label_list = transform_column_choice()
+  transform_check = st.checkbox('Check if you have selected what columns to apply your desired transformation steps to.')
+
+
+  if transform_check:
     preprocessor = ColumnTransformer(
-    transformers=[
-        ('num', StandardScaler(), numerical),  # Scale numerical features
-        # ('cat', OneHotEncoder(), ['categorical_feature'])  # One-hot encode categorical features
-    ])
+    transformers=[('num', StandardScaler(), scale_list), 
+        ('cat', OneHotEncoder(), one_hot_list),
+        ('label', LabelEncoder(), label_list)
+        ])
 
     input = [('preprocessor', preprocessor)]
     # hyperparameter grid
@@ -359,16 +404,22 @@ def catboost_model(Xtrain, ytrain, X_test, y_test):
 
     elif sample == 'No':
         input.append(('model', CatBoostClassifier(auto_class_weights = 'Balanced', loss_function='Logloss', verbose = 0)))
-        model_train_classification(input,param_grid,Xtrain, ytrain, X_test, y_test)       
+        model_train_classification(input,param_grid,Xtrain, ytrain, X_test, y_test)    
+
+  else : st.info('If you do not desire to add transformation steps to the pipeline, you should still check the box to proceed with training')
+   
 
 def decision_tree_model_reg(X_train, y_train, X_test, y_test):
-    numerical, non_numerical, date = data_types(X_train)
+  scale_list, one_hot_list, label_list = transform_column_choice()
+  transform_check = st.checkbox('Check if you have selected what columns to apply your desired transformation steps to.')
 
+
+  if transform_check:
     preprocessor = ColumnTransformer(
-    transformers=[
-        ('num', StandardScaler(), numerical),  # Scale numerical features
-        # ('cat', OneHotEncoder(), ['categorical_feature'])  # One-hot encode categorical features
-    ])
+    transformers=[('num', StandardScaler(), scale_list), 
+        ('cat', OneHotEncoder(), one_hot_list),
+        ('label', LabelEncoder(), label_list)
+        ])
 
     input = [('preprocessor', preprocessor)]
 
@@ -381,63 +432,60 @@ def decision_tree_model_reg(X_train, y_train, X_test, y_test):
 
     input.append(('model', DTR()))
     model_train_regression(input,param_grid,X_train, y_train, X_test, y_test)
-            
+
+  else : st.info('If you do not desire to add transformation steps to the pipeline, you should still check the box to proceed with training')
+       
 
 
 def linear_regression(X_train, y_train, X_test, y_test):
-    numerical, non_numerical, date = data_types(X_train)
-    preprocessor = ColumnTransformer(
-    transformers=[
-        ('num', StandardScaler(), numerical),  # Scale numerical features
-        # ('cat', OneHotEncoder(), ['categorical_feature'])  # One-hot encode categorical features
-    ])
+    scale_list, one_hot_list, label_list = transform_column_choice()
+    transform_check = st.checkbox('Check if you have selected what columns to apply your desired transformation steps to.')
 
-    input = [('preprocessor', preprocessor), ('poly', PolynomialFeatures())]
-    param_grid = {'poly__degree': [i for i in range(1,10)], 
+
+    if transform_check:
+        preprocessor = ColumnTransformer(
+        transformers=[('num', StandardScaler(), scale_list), 
+        ('cat', OneHotEncoder(), one_hot_list),
+        ('label', LabelEncoder(), label_list)
+        ])
+
+        input = [('preprocessor', preprocessor), ('poly', PolynomialFeatures())]
+        st.write(input)
+        param_grid = {'poly__degree': [i for i in range(1,10)], 
                   'poly__include_bias': [False, True]}
     
 
-    reg = st.selectbox('Select what regularization modification you will like to incorporate', options=['Ridge', 'Lasso', 'None',], index=None)
-    if reg == 'None':
-        input.append(('model', LinearRegression()))
-        param_grid.update({'model__fit_intercept': [True, False]})
-        model_train_regression(input, param_grid, X_train, y_train, X_test, y_test)
+        reg = st.selectbox('Select what regularization modification you will like to incorporate', options=['Ridge', 'Lasso', 'None',], index=None)
+        if reg == 'None':
+           input.append(('model', LinearRegression()))
+           param_grid.update({'model__fit_intercept': [True, False]})
+           model_train_regression(input, param_grid, X_train, y_train, X_test, y_test)
 
-    elif reg == 'Ridge':
-        input.append(('model', Ridge()))
-        param_grid.update({'model__fit_intercept': [True, False],
+        elif reg == 'Ridge':
+           input.append(('model', Ridge()))
+           param_grid.update({'model__fit_intercept': [True, False],
                            'model__alpha': [0.1, 1.0, 10.0, 100.0]})
-        model_train_regression(input, param_grid, X_train, y_train, X_test, y_test)
+           model_train_regression(input, param_grid, X_train, y_train, X_test, y_test)
         
-    elif reg == 'Lasso':
-        input.append(('model', Lasso()))
-        param_grid.update({'model__fit_intercept': [True, False],
+        elif reg == 'Lasso':
+           input.append(('model', Lasso()))
+           param_grid.update({'model__fit_intercept': [True, False],
                            'model__alpha': [0.1, 1.0, 10.0, 100.0]})
-        model_train_regression(input, param_grid, X_train, y_train, X_test, y_test)
+           model_train_regression(input, param_grid, X_train, y_train, X_test, y_test)
 
-    # hyperparameter grid
+    else : st.info('If you do not desire to add transformation steps to the pipeline, you should still check the box to proceed with training')
 
-    
+  
 
-
-
-def data_types(data):
-    numerical = []
-    non_numerical = []
-    date_field =[]
-
-    for column in data.columns:
-        if data[column].dtype =='O':
-            non_numerical.append(column)
-
-        elif pd.api.types.is_datetime64_any_dtype(data[column]):
-            date_field.append(column)
-
-        else: numerical.append(column)
-
-    return numerical, non_numerical, date_field    
-
-
+def transform_column_choice():
+    continuous = st.session_state.to_clean_cont
+    categorical = st.session_state.to_clean_cat
+    st.sidebar.markdown('---')
+    scaling = st.sidebar.multiselect('Select what colums you will want to scale in the model', options=continuous, default = None)
+    one_hot = st.sidebar.multiselect('Select what categorical columns you will want to one-hot encode in the model', options=categorical, default = None)
+    remaining_categorical = [col for col in categorical if col not in one_hot]
+    label = st.sidebar.multiselect('Select what columns you will like to label encode in the model', options= remaining_categorical, default= None)
+    return scaling, one_hot, label
 # Scale just the continuous data. 
 # Add renaming columns and formating attribute into the wragling script
 # account for adding columns and date transformations   
