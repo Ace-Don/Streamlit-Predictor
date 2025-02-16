@@ -41,7 +41,7 @@ def overview_data(df):
 def file_handler(file):
     success_prompt = st.empty()
     if file is not None:
-        success_prompt.success(f"{file.name} uploaded successfully.")
+        success_prompt.success(f"✅ {file.name} uploaded successfully.")
         time.sleep(5)
         success_prompt.empty()
         file_type = file.name.split('.')[-1]

@@ -5,7 +5,7 @@ import time
 import plotly.express as px
 
 st.markdown('# See What Your Data Says! 📈📊')
-plotly_visuals = ["Scatter Plot", "Line Chart", "Bar Chart", "Histogram","Box Plot", "Pie Chart","Heatmap", "Bubble Chart","Area Chart", "Violin Plot", "Candlestick Chart","Choropleth Map", "3D Scatter Plot", "Radar Chart", "Sunburst Chart"]
+plotly_visuals = ["Scatter Plot", "Line Chart", "Bar Chart", "Histogram","Box Plot", "Pie Chart","Heatmap", "Bubble Chart","Area Chart", "Violin Plot", "3D Scatter Plot", "Sunburst Chart"]
 def visualize_data(datasets):
     if datasets is not None:
        st.markdown(f'##### The following tables have been stored for you for use:')
@@ -106,9 +106,9 @@ def visualize_data(datasets):
                     st.plotly_chart(fig)
 
            elif visual == 'Pie Chart':
-                x = st.sidebar.selectbox('Plot', options=df.columns, index = None)
-                count = df[x].value_counts()
+                x = st.sidebar.selectbox('Data', options=df.columns, index = None)
                 if x:
+                    count = df[x].value_counts()
                     fig = px.pie(count, names = count.index, values=count.values, hole= 0.2, title=f'Pie Chart of {x}')
                     st.plotly_chart(fig)
                           
@@ -121,9 +121,67 @@ def visualize_data(datasets):
                     fig = px.scatter(df, x=x, y=y, size=size, color=legend, title =  f'Bubble Chart of {x} vs {y} with Size as {size} and Color as {legend}')
                     st.plotly_chart(fig)
 
+           elif visual == 'Sunburst Chart':
+                x = st.sidebar.multiselect('Hierachy', options=df.columns, default = [])
+                if x:
+                    fig = px.sunburst(df, path=x, color_continuous_scale="Viridis", title=f'Sunburst Chart with Hierarchy {", ".join(x)}')
+                    st.plotly_chart(fig)
+
+
+           elif visual == 'Violin Plot':
+                y = st.sidebar.selectbox('Plot', options=df.columns, index = None)
+                x = st.sidebar.selectbox('Against (optional)', options=df.columns, index = None)
+                legend = st.sidebar.selectbox('Legend (optional)', options=df.columns, index = None)
+                if x or y or legend:
+                    fig = px.violin(df, y=y, x=x, color=legend, box=True, points="all", title =  f'Violin Plot of {x} vs {y} with {legend} as Color' if x and y and legend  
+                                                                                        else f'Violin Plot of {x} vs {y}' if x and y 
+                                                                                        else f'Violin Plot of {y} with {legend} as Color' if y and legend
+                                                                                        else f'Violin Plot of {x} with {legend} as Color' if x and legend
+                                                                                        else f'Violin Plot of {x}' if x
+                                                                                        else f'Violin Plot of {y}')
                     
+                    fig.update_layout(
+                        width=1000,  
+                        height=600,
+                    )
+
+                    st.plotly_chart(fig)  
                        
-    
+           elif visual == 'Area Chart':
+                x = st.sidebar.selectbox('X-Axis', options=df.columns, index = None)
+                y = st.sidebar.selectbox('Y-Axis', options=df.columns, index = None)
+                legend = st.sidebar.selectbox('Color (Optional)', options=df.columns, index = None)
+                if x and y or legend:
+                    fig = px.area(df, x=x, y=y, color=legend, title =  f'Area Chart of {x} vs {y} with Color as {legend}' if x and y and legend
+                                                                        else f'Area Chart of {x} vs {y}')
+                    
+                    fig.update_layout(
+                        width=1000,  
+                        height=570,
+                    )
+                    
+                    st.plotly_chart(fig)
+
+           elif visual == 'Heatmap':
+                x = st.sidebar.selectbox('X-Axis', options=df.columns, index = None)
+                y = st.sidebar.selectbox('Y-Axis', options=df.columns, index = None)
+                if x and y :
+                    fig = px.density_heatmap(df, x=x, y=y, title=f'Heatmap of {x} vs {y}')
+                    st.plotly_chart(fig)   
+
+           elif visual == "3D Scatter Plot":
+                x = st.sidebar.selectbox('X-Axis', options=df.columns, index = None)
+                y = st.sidebar.selectbox('Y-Axis', options=df.columns, index = None)
+                z = st.sidebar.selectbox('Z-Axis', options=df.columns, index = None)
+                legend = st.sidebar.selectbox('Color (Optional)', options=df.columns, index = None)
+                if x and y and z:
+                    fig = px.scatter_3d(df, x=x, y=y, z=z, color= legend, title=f'3D Scatter Plot of {x}, {y}, and {z}')
+                    st.plotly_chart(fig)     
+
+                fig.update_layout(
+                        width=1000,  
+                        height=670,
+                    )          
 
 
 if "data" not in st.session_state:

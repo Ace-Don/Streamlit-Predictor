@@ -25,10 +25,10 @@ def merge_func():
     st.info('Please select two sheets to merge')
 
   elif len(selected_to_merge) == 1:
-    st.warning('Please select at least two sheets to merge')
+    st.warning('⚠️ Please select at least two sheets to merge')
 
   elif len(selected_to_merge) > max_select:
-    st.warning(f'You can only select {max_select} sheets to merge at a time')
+    st.warning(f'⚠️ You can only select {max_select} sheets to merge at a time')
 
   else: 
     selc_list = st.session_state.selected_to_merge = selected_to_merge  
