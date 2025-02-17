@@ -60,5 +60,5 @@ This project is licensed under the MIT License.
 
 ---
 
-**Streamlit-Predictor** aims to make data science workflows more accessible, efficient, and enjoyable for professionals and enthusiasts alike. Happy modeling! 
+**Streamlit-Predictor** aims to make data science workflows more accessible, efficient, and enjoyable for professionals and enthusiasts alike.
 
