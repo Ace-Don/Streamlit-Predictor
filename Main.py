@@ -15,6 +15,7 @@ if 'page' not in st.session_state:
 def overview_data(df):
     st.markdown("#### Featured Columns")
     st.markdown(f'**{[col for col in df.columns]}**')
+    st.write({f'Number of Rows: {len(df)}'})
     st.markdown("#### Table Statistics")
     overview_dict = {'Featured Colums': [str(i) for i in df.columns],
                     'Data Type': [str(col_type) for col_type in df.dtypes.values],
@@ -49,9 +50,6 @@ def file_handler(file):
         st.markdown("### $Desciptive$  $Overview$")
         st.write(f"File type: {file_type.upper()}")
         return file, file_type
-
-def merge_sheets():
-    pass
 
 
 

@@ -449,7 +449,6 @@ def linear_regression(X_train, y_train, X_test, y_test):
         ])
 
         input = [('preprocessor', preprocessor), ('poly', PolynomialFeatures())]
-        st.write(input)
         param_grid = {'poly__degree': [i for i in range(1,10)], 
                   'poly__include_bias': [False, True]}
     
@@ -477,14 +476,39 @@ def linear_regression(X_train, y_train, X_test, y_test):
   
 
 def transform_column_choice(data):
-    continuous = [col for col in data.columns if col in st.session_state.to_clean_cont]
-    categorical = [col for col in data.columns if col in st.session_state.to_clean_cat]
+    cat, cont, date, other = data_type(data)
+    continuous = [col for col in data.columns if col in cont]
+    categorical = [col for col in data.columns if col in cat]
     st.sidebar.markdown('---')
     scaling = st.sidebar.multiselect('Select what colums you will want to scale in the model', options=continuous, default = None)
     one_hot = st.sidebar.multiselect('Select what categorical columns you will want to one-hot encode in the model', options=categorical, default = None)
     remaining_categorical = [col for col in categorical if col not in one_hot]
     label = st.sidebar.multiselect('Select what columns you will like to label encode in the model', options= remaining_categorical, default= None)
     return scaling, one_hot, label
-# Scale just the continuous data. 
-# Add renaming columns and formating attribute into the wragling script
-# account for adding columns and date transformations   
+
+
+def data_type(df):
+    categorical = []
+    continuous = []
+    date = []
+    other = []
+    unique_index = df.nunique().index
+    unique_values = df.nunique().values
+    for i, unique in enumerate(unique_index):
+        if unique_values[i] <= 8:
+            categorical.append(unique)
+
+        elif unique_values[i] > 8:
+            if df[unique].dtype == 'O' :
+                other.append(unique)
+
+            elif pd.api.types.is_datetime64_any_dtype(df[unique]):
+                date.append(unique)
+
+            else: continuous.append(unique)
+        st.session_state.to_clean_cont = continuous
+        st.session_state.to_clean_cat = categorical  
+        st.session_state.to_clean_str = other  
+        st.session_state.to_clean_date = date
+
+    return categorical, continuous, date, other    
