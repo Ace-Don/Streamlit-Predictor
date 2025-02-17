@@ -1,4 +1,4 @@
-# Streamlit-Predictor (I'll most definitely change this name later on😂)
+# Streamlit-Predictor (I'll most definitely change this name later on)
 
 ## Overview
 When working with datasets as a data scientist on a notebook platform like Jupyter, or any platform in general, properly gaining insights after understanding the business requirements and drafting out an analytical approach involves several steps:
@@ -48,17 +48,13 @@ Run the stramlit apllication on your bash with the code `Streamlit run Main.py`
 - **Python (and featured libraries)**
 - **Streamlit** - for the interactive UI
 
-## Feel Free to Add contributions
-1. Fork the repository.
-2. Create a new branch with a descriptive name.
-3. Make your changes and commit them.
-4. Push to your forked repository.
-5. Submit a pull request.
 
 ## License
 This project is licensed under the MIT License.
 
 ---
 
-**Streamlit-Predictor** aims to make data science workflows more accessible, efficient, and enjoyable for professionals and enthusiasts alike.
+## Note
+**Streamlit-Predictor** is currently in beta. Features may change, and bugs may occur. User feedback is highly appreciated to improve the application.
+
 
