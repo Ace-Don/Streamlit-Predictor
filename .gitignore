@@ -1,0 +1,11 @@
+# Python ignores
+__pycache__/
+*.pyc
+*.pyo
+venv/
+streamlit_venv/
+.DS_Store
+*.env
+.idea/
+.vscode/
+.ipynb_checkpoints/
