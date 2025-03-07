@@ -1,4 +1,4 @@
-# Streamlit-Predictor (I'll most definitely change this name later on)
+# Streamlit-Predictor
 
 ## Overview
 When working with datasets as a data scientist on a notebook platform like Jupyter, or any platform in general, properly gaining insights after understanding the business requirements and drafting out an analytical approach involves several steps:
