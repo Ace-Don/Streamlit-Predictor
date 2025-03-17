@@ -7,6 +7,7 @@ import re
 from transformations import *
 from Main import overview_data
 from streamlit_ace import st_ace
+import io
 
 st.markdown('# Clean Up Your Data 🧹🚿')
 
@@ -451,7 +452,22 @@ for i, entry in enumerate(st.session_state.history_tracker.history):
     with st.sidebar.expander(f"🔹 {entry['timestamp']} - {entry['action']}"):
         st.write(f"**Timestamp:** {entry['timestamp']}")
         st.write(f"**Action:** {entry['action']}")
-        
+          # Check if snapshot exists
+        if 'data' in entry:
+                snapshot_df = entry['data']  # Assuming it's a Pandas DataFrame
+
+                # Convert to CSV for download
+                csv_buffer = io.StringIO()
+                snapshot_df.to_csv(csv_buffer, index=False)
+                csv_data = csv_buffer.getvalue()
+
+                # Download button
+                st.download_button(
+                    label="⬇️ Download This Version",
+                    data=csv_data,
+                    file_name=f"version_{i}_{entry['timestamp']}.csv",
+                    mime="text/csv"
+                )
         
         # Restore button
         if st.button(f"Restore This Version", key=f"restore_{i}"):
