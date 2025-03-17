@@ -170,6 +170,7 @@ def drop_rows(df):
             st.write({f'Current number of rows: {len(df)}'}) 
             st.success('✅ Successfully Dropped Rows')    
             st.session_state.to_clean = df
+            st.session_state.history_tracker.save_version(st.session_state.to_clean, action=f"Droped {mode} rows")
             st.info("Clean data has been stored for other processes. Select what else you'll like to do on the side bar")       
     
 def drop_duplicates(df):
@@ -184,6 +185,7 @@ def drop_duplicates(df):
           df = df.drop_duplicates().reset_index(drop=True)
           st.success('✅ Successfully Dropped Duplicates')
           st.session_state.to_clean = df
+          st.session_state.history_tracker.save_version(st.session_state.to_clean, action=f"Droped Duplicates")
           st.info("Clean data has been stored for other processes. Select what else you'll like to do on the side bar")
     
     else: st.info('No duplicated rows found')
@@ -200,6 +202,7 @@ def drop_columns(df):
           df = df.drop(columns, axis=1)
           st.success('✅ Successfully Dropped Columns')
           st.session_state.to_clean = df
+          st.session_state.history_tracker.save_version(st.session_state.to_clean, action=f"Droped Column: {columns}")
           st.markdown('#### $After$ $Drop$')
           st.dataframe(df.head())
           st.write(f'Current Columns: {[df.columns]}')
@@ -233,6 +236,7 @@ def handle_missing_values(df, null_val):
                df.dropna(subset=missing, inplace=True)
                st.success(f'✅ Successfully Dropped Rows with missing {missing} values')
                st.session_state.to_clean = df
+               st.session_state.history_tracker.save_version(st.session_state.to_clean, action=f"Droped Rows where {missing} is null")
                st.info("Clean data has been stored for other processes. Select what else you'll like to do on the side bar")
 
         if method == 'Drop Columns':
@@ -242,6 +246,7 @@ def handle_missing_values(df, null_val):
                  df.drop(missing, axis=1, inplace = True)
                  st.success(f'✅ Successfully Dropped Feature {missing}')
                  st.session_state.to_clean = df
+                 st.session_state.history_tracker.save_version(st.session_state.to_clean, action=f"Droped Column: {missing}")
                  st.info("Clean data has been stored for other processes. Select what else you'll like to do on the side bar")
 
         if method == 'Impute Values':
@@ -251,18 +256,21 @@ def handle_missing_values(df, null_val):
                     df[missing] = df[missing].fillna(df[missing].mean())
                     st.success(f'✅ Successfully Imputed Missing Values with {method}')
                     st.session_state.to_clean = df
+                    st.session_state.history_tracker.save_version(st.session_state.to_clean, action=f"Imputed Missing Values with {method}")
                     st.info("Clean data has been stored for other processes. Select what else you'll like to do on the side bar")
                 
                 elif method == 'Median':
                     df[missing] = df[missing].fillna(df[missing].median())
                     st.success(f'✅ Successfully Imputed Missing Values with {method}')
                     st.session_state.to_clean = df
+                    st.session_state.history_tracker.save_version(st.session_state.to_clean, action=f"Imputed Missing Values with {method}")
                     st.info("Clean data has been stored for other processes. Select what else you'll like to do on the side bar")
                 
                 elif method == 'Mode':
                     df[missing] = df[missing].fillna(df[missing].mode()[0])
                     st.success(f'✅ Successfully Imputed Missing Values with {method}')
                     st.session_state.to_clean = df
+                    st.session_state.history_tracker.save_version(st.session_state.to_clean, action=f"Imputed Missing Values with {method}")
                     st.info("Clean data has been stored for other processes. Select what else you'll like to do on the side bar")
                 
                 elif method == 'Constant Value':
@@ -273,6 +281,7 @@ def handle_missing_values(df, null_val):
                            df[missing] = df[missing].fillna(constant)
                            st.success(f'✅ Successfully Imputed Missing Values with {method}')
                            st.session_state.to_clean = df
+                           st.session_state.history_tracker.save_version(st.session_state.to_clean, action=f"Imputed Missing Values with {method}")
                            st.info("Clean data has been stored for other processes. Select what else you'll like to do on the side bar")
 
 def transformation(df,categorical, continuous, other, dates):
@@ -339,6 +348,7 @@ def rename_columns(df):
               df.rename(columns={column: new_name}, inplace=True)
               st.success(f'✅ Successfully Renamed Column {column} to {new_name}')
               st.session_state.to_clean = df
+              st.session_state.history_tracker.save_version(st.session_state.to_clean, action=f"Renamed Column '{column}' to '{new_name}'")
               st.info("Clean data has been stored for other processes. Select what else you'll like to do on the side bar")
 
 def alter_values(df):
@@ -380,6 +390,7 @@ def alter_values(df):
                            df[column] = df[column].replace(value_to_alter, new_value)
                            st.success(f'✅ Successfully Altered Value {value_to_alter} with {new_value} in {column}')
                            st.session_state.to_clean = df
+                           st.session_state.history_tracker.save_version(st.session_state.to_clean, action=f"Altered Value {value_to_alter} to {new_value}")
                            st.info("Clean data has been stored for other processes. Select what else you'll like to do on the side bar")
 
               else:
@@ -413,6 +424,7 @@ def alter_values(df):
 
                     st.success('✅ Changes applied to DataFrame!')
                     st.session_state.to_clean = df
+                    st.session_state.history_tracker.save_version(st.session_state.to_clean, action=f"Modified dataframe with code")
                     st.dataframe(df.head())  # Show updated DataFrame
 
                 except Exception as e:
@@ -429,4 +441,20 @@ else:
     elif st.session_state.clean_page == 'two':
        st.session_state.data['Cleaned data'] = st.session_state.to_clean
        clean_up_data()
+
+# Set to track displayed actions
+displayed_actions = set()
+
+st.sidebar.markdown('-------')
+st.sidebar.subheader("🔄 Data Version Control")
+for i, entry in enumerate(st.session_state.history_tracker.history):
+    with st.sidebar.expander(f"🔹 {entry['timestamp']} - {entry['action']}"):
+        st.write(f"**Timestamp:** {entry['timestamp']}")
+        st.write(f"**Action:** {entry['action']}")
+        
+        
+        # Restore button
+        if st.button(f"Restore This Version", key=f"restore_{i}"):
+            st.success(f"✅ Restored version from {entry['timestamp']} - {entry['action']}")
+
        

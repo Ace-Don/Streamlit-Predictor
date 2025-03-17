@@ -3,7 +3,10 @@ import pandas as pd
 import numpy as np
 import time
 from merge import merge_func
-# from Preview import preview_dict
+from history import HistoryTracker
+
+if "history_tracker" not in st.session_state:
+    st.session_state.history_tracker = HistoryTracker()
 
 st.markdown("# Your Favorite Predictor App 👍")
 st.sidebar.markdown("# Main page")
@@ -59,7 +62,7 @@ def view(file, format):
             df = pd.read_csv(file)
             overview_data(df)
             st.session_state.data[f"{file.name}"] = df
-            
+            st.session_state.history_tracker.save_version(st.session_state.data[f"{file.name}"], action=f"{file.name} Uploaded")
         
      elif format.upper() == 'XLSX':
             xlsx = pd.ExcelFile(file)
@@ -78,6 +81,7 @@ def view(file, format):
                     overview_data(df)
                     index.update({sheet : df.columns.tolist()})
                     st.session_state.data[f"{sheet}"] = df
+                    st.session_state.history_tracker.save_version(st.session_state.data[f"{sheet}"], action=f"{sheet} Uploaded")
 
                 common_columns_confirmed = {}
                 keys = list(index.keys())
@@ -123,10 +127,21 @@ if st.session_state.page == 'view_page':
       file, format = file_handler(uploaded_file)
       view(file, format)
 
+
 elif st.session_state.page == 'merge_page':
     # st.write("You are now on the merge page!")
     merge_func()
 
-
-
 else: st.stop()
+
+st.sidebar.markdown('-------')
+st.sidebar.subheader("🔄 Data Version Control")
+for i, entry in enumerate(st.session_state.history_tracker.history):
+    with st.sidebar.expander(f"🔹 {entry['timestamp']} - {entry['action']}"):
+        st.write(f"**Timestamp:** {entry['timestamp']}")
+        st.write(f"**Action:** {entry['action']}")
+        
+        # Restore button
+        if st.button(f"Restore This Version", key=f"restore_{i}"):
+            st.success(f"✅ Restored version from {entry['timestamp']} - {entry['action']}")
+

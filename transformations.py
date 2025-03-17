@@ -18,6 +18,7 @@ def change_data_types(df, column, convert_to):
                     df[column] = df[column].astype(int)
                     st.success(f'✅ Successfully Changed Data Type of {column} to int')
                     st.session_state.to_clean = df  
+                    st.session_state.history_tracker.save_version(st.session_state.to_clean, action=f"Changed Data Type of {column} to {convert_to}")
                     st.info("Clean data has been stored for other processes. Select what else you'll like to do on the side bar")   
 
                 elif convert_to == 'float':
@@ -26,18 +27,21 @@ def change_data_types(df, column, convert_to):
                     df[column] = df[column].astype(float)
                     st.success(f'✅ Successfully Changed Data Type of {column} to float')
                     st.session_state.to_clean = df  
+                    st.session_state.history_tracker.save_version(st.session_state.to_clean, action=f"Changed Data Type of {column} to {convert_to}")
                     st.info("Clean data has been stored for other processes. Select what else you'll like to do on the side bar")   
 
                 elif convert_to == 'object':   
                     df[column] = df[column].astype(str)
                     st.success(f'✅ Successfully Changed Data Type of {column} to object')
                     st.session_state.to_clean = df  
+                    st.session_state.history_tracker.save_version(st.session_state.to_clean, action=f"Changed Data Type of {column} to {convert_to}")
                     st.info("Clean data has been stored for other processes. Select what else you'll like to do on the side bar") 
 
                 elif convert_to == 'datetime': 
                      df[column] = pd.to_datetime(df[column])
                      st.success(f'✅ Successfully Changed Data Type of {column} to datetime')
-                     st.session_state.to_clean = df  
+                     st.session_state.to_clean = df 
+                     st.session_state.history_tracker.save_version(st.session_state.to_clean, action=f"Changed Data Type of {column} to {convert_to}") 
                      st.info("Clean data has been stored for other processes. Select what else you'll like to do on the side bar")  
 
 
@@ -49,11 +53,13 @@ def binning(df, column):
             if binning_method == 'Equal Width':
                 df[column + '_binned'] = pd.cut(df[column], bins=num_bins, labels=False)
                 st.session_state.to_clean = df  
+                st.session_state.history_tracker.save_version(st.session_state.to_clean, action=f"Binned {column} with {binning_method}")
                 st.info("Clean data has been stored for other processes. Select what else you'll like to do on the side bar")   
             
             elif binning_method == 'Equal Frequency':
                 df[column + '_binned'] = pd.qcut(df[column], q=num_bins, labels=False, duplicates='drop')
                 st.session_state.to_clean = df  
+                st.session_state.history_tracker.save_version(st.session_state.to_clean, action=f"Binned {column} with {binning_method}")
                 st.info("Clean data has been stored for other processes. Select what else you'll like to do on the side bar")   
 
 
@@ -63,8 +69,9 @@ def scale_data(df, columns):
         df[column] = scaler.fit_transform(df[[column]])
     time.sleep(1)
     st.write(df)
-    st.success(f'✅ Successfully Scaled {column}')
+    st.success(f'✅ Successfully Scaled {columns}')
     st.session_state.to_clean = df  
+    st.session_state.history_tracker.save_version(st.session_state.to_clean, action=f"Feature Scaling: {columns}")
     st.info("Clean data has been stored for other processes. Select what else you'll like to do on the side bar")
 
 
@@ -74,6 +81,7 @@ def one_hot_encoding(df,columns):
     st.write(df_encoded.head())
     df = df_encoded 
     st.session_state.to_clean = df  
+    st.session_state.history_tracker.save_version(st.session_state.to_clean, action=f"BOne Hot Encoding: {columns}")
     st.info("Clean data has been stored for other processes. Select what else you'll like to do on the side bar")   
 
 
@@ -84,6 +92,7 @@ def label_encoding(df, columns):
     st.markdown('##### Instant View of Label Encoded Data:') 
     st.write(df.head())
     st.session_state.to_clean = df  
+    st.session_state.history_tracker.save_version(st.session_state.to_clean, action=f"Label Encoding: {column}")
     st.info("Clean data has been stored for other processes. Select what else you'll like to do on the side bar")
 
 def add_columns(df):
@@ -116,6 +125,7 @@ def add_columns(df):
 
             st.success('✅ Changes applied to DataFrame!')
             st.session_state.to_clean = df
+            st.session_state.history_tracker.save_version(st.session_state.to_clean, action=f"Added columns with code")
             st.dataframe(df.head())  # Show updated DataFrame
 
         except Exception as e:

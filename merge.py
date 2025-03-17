@@ -54,6 +54,7 @@ def merge_func():
         st.markdown('#### Whole Table')
         st.dataframe(merged_df)
         st.session_state.data[f"{sheets[0]} & {sheets[1]} merged"] = merged_df
+        st.session_state.history_tracker.save_version(st.session_state.data[f"{sheets[0]} & {sheets[1]} merged"], action=f"{sheets[0]} & {sheets[1]} merged")
         
     else: st.info('Go on to select a column to merge on!')
   
