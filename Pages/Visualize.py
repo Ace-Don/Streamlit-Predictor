@@ -6,7 +6,7 @@ import time
 import plotly.express as px
 
 st.markdown('# See What Your Data Says! 📈📊')
-plotly_visuals = ["Scatter Plot", "Line Chart", "Bar Chart", "Histogram","Box Plot", "Pie Chart","Heatmap", "Bubble Chart","Area Chart", "Violin Plot", "3D Scatter Plot", "Sunburst Chart"]
+plotly_visuals = ["Pivot Table","Scatter Plot", "Line Chart", "Bar Chart", "Histogram","Box Plot", "Pie Chart","Heatmap", "Bubble Chart","Area Chart", "Violin Plot", "3D Scatter Plot", "Sunburst Chart"]
 def visualize_data(datasets):
     if datasets is not None:
        st.markdown(f'##### The following tables have been stored for you for use:')
@@ -48,6 +48,21 @@ def visualize_data(datasets):
                                                                                             else f'Scatter Plot of {x} vs {y}')
                    st.plotly_chart(fig)
             
+           elif visual == 'Pivot Table':
+               index_col = st.sidebar.multiselect("Row Index(es)", df.columns, default=None)
+               column_col = st.sidebar.multiselect("Column Index(es)", df.columns, default=None)
+               value_col = st.sidebar.multiselect("Value(s)", df.columns, default=None)
+               agg_func = st.sidebar.selectbox("Aggregation Function", ["sum", "mean", "count", "min", 
+                                                                        "max", "median", "std", "var", 
+                                                                        "prod", "first", "last"], index=None)
+
+               if (index_col or column_col or value_col) and agg_func:
+                   pivot_table = df.pivot_table(index=index_col, columns=column_col, values=value_col, aggfunc=agg_func)
+                   st.subheader("Pivot Table")
+                   st.dataframe(pivot_table)
+
+               else:st.info('Select at least an index, value and one aggregation function')
+
            elif visual == 'Box Plot':
                 x = st.sidebar.selectbox('Plot', options=df.columns, index = None)
                 y = st.sidebar.selectbox('Against (optional)', options=df.columns, index = None)
