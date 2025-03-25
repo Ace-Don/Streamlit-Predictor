@@ -157,8 +157,4 @@ for i, entry in enumerate(st.session_state.history_tracker.history):
                     file_name=f"version_{i}_{entry['timestamp']}.csv",
                     mime="text/csv"
                 )
-        
-        # Restore button
-        if st.button(f"Restore This Version", key=f"restore_{i}"):
-            st.success(f"✅ Restored version from {entry['timestamp']} - {entry['action']}")
 

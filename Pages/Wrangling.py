@@ -470,7 +470,12 @@ for i, entry in enumerate(st.session_state.history_tracker.history):
                 )
         
         # Restore button
-        if st.button(f"Restore This Version", key=f"restore_{i}"):
-            st.success(f"✅ Restored version from {entry['timestamp']} - {entry['action']}")
-
-       
+        if st.button(f"↩️ Restore This Version", key=f"restore_{i}"):
+            restored_data = st.session_state.history_tracker.restore_version(i)
+            
+            if restored_data is not None:
+                st.session_state.to_clean = restored_data  # Update the dataset in session state
+                st.success(f"✅ Restored version from {entry['timestamp']} - {entry['action']} to 'Cleaned data'")
+            else:
+                st.error("❌ Failed to restore version.")
+        
