@@ -20,6 +20,7 @@ def overview_data(df):
     st.markdown("#### Featured Columns")
     st.markdown(f'**{[col for col in df.columns]}**')
     st.write({f'Number of Rows: {len(df)}'})
+    st.write({f'Number of Columns: {len(df.columns)}'})
     st.markdown("#### Table Statistics")
     overview_dict = {'Featured Colums': [str(i) for i in df.columns],
                     'Data Type': [str(col_type) for col_type in df.dtypes.values],
